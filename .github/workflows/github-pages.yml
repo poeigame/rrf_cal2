@@ -26,10 +26,23 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Resolve Pages path
+        id: resolve_path
+        shell: bash
+        run: |
+          if [ -d "python_backend/gh-pages" ]; then
+            echo "site_path=python_backend/gh-pages" >> "$GITHUB_OUTPUT"
+          elif [ -d "gh-pages" ]; then
+            echo "site_path=gh-pages" >> "$GITHUB_OUTPUT"
+          else
+            echo "No Pages directory found. Expected python_backend/gh-pages or gh-pages"
+            exit 1
+          fi
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: python_backend/gh-pages
+          path: ${{ steps.resolve_path.outputs.site_path }}
 
   deploy:
     environment:
